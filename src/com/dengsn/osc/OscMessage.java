@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class OscMessage
@@ -68,6 +69,13 @@ public class OscMessage
   public OscMessage add(String s)
   {
     this.arguments.add(s);
+    return this;
+  }
+  
+  // Add multiple arguments
+  public OscMessage addAll(Collection<? extends Object> collection)
+  {
+    collection.forEach(this.arguments::add);
     return this;
   }
   
