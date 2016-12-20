@@ -1,5 +1,6 @@
 package com.dengsn.osc;
 
+import com.dengsn.osc.util.OscMessageOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -79,14 +80,6 @@ public class OscMessage
     return this;
   }
   
-  // To byte array
-  byte[] bytes() throws IOException
-  {
-    return new OscMessageOutputStream()
-      .writeMessage(this)
-      .toByteArray();
-  }
-  
   // Send the mesasge
   public void sendTo(OscSender sender) throws IOException
   {
@@ -99,5 +92,14 @@ public class OscMessage
   public void sendTo(String address, int port) throws IOException, UnknownHostException
   {
     new OscSender(InetAddress.getByName(address),port).send(this);
+  }
+  
+  // Convert to string
+  @Override public String toString()
+  {
+    StringBuilder sb = new StringBuilder(this.getAddress());
+    for (Object o : this.getArguments())
+      sb.append(" ").append(o.toString());
+    return sb.toString();
   }
 }

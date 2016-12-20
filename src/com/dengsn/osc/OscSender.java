@@ -1,5 +1,6 @@
 package com.dengsn.osc;
 
+import com.dengsn.osc.util.OscMessageOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -10,7 +11,7 @@ public class OscSender
 {
   // Variables
   private final InetAddress address;
-  private final int port;
+  private final Integer port;
   
   // Constructor
   public OscSender(InetAddress address, int port)
@@ -23,16 +24,26 @@ public class OscSender
     this(InetAddress.getLocalHost(),port);
   }
   
+  // Management
+  public InetAddress getAddress()
+  {
+    return this.address;
+  }
+  public int getPort()
+  {
+    return this.port;
+  }
+  
   // Send message
   public void send(OscMessage message) throws IOException
   {
-    // Get the buffer from the message
-    byte[] buffer = message.bytes();
-      
-    // Create a new UDP socket
+    // Create a byte buffer from the message
+    byte[] buffer = new OscMessageOutputStream()
+      .writeMessage(message)
+      .toByteArray();
+    
+    // Create a new UDP socket and packet and send it
     DatagramSocket socket = new DatagramSocket();
-      
-    // Create a new UDP packet and send it
     DatagramPacket packet = new DatagramPacket(buffer,buffer.length,this.address,this.port);
     socket.send(packet);
   }
@@ -40,6 +51,10 @@ public class OscSender
   // Convert to string
   @Override public String toString()
   {
-    return this.address.toString() + ":" + this.port;
+    return new StringBuilder("sender ")
+      .append(this.getAddress().getHostAddress())
+      .append(":")
+      .append(this.getPort())
+      .toString();
   }
 }
