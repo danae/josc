@@ -3,7 +3,7 @@
 ## Installation
 Download the [latest release](https://github.com/dengsn/Josc/releases) of Josc.jar and place it in a `code/` folder inside your sketch. Include the following line in your Processing sketch:
 
-    import com.dengsn.osc.*
+    import com.dengsn.osc.*;
     
 ## Sending messages
 
@@ -47,7 +47,7 @@ For multiple messages sent to the same sender, you can also use the `OscSender` 
       // Create a listener to handle messages
       listener = new OscListener()
       {
-        public void handle(OscMessage message, OscSender)
+        public void handle(OscMessage message, OscSender sender)
         {
           // Get the address of the message (assuming the message that was sent previously)
           println(message.getAddress());                  // /address
