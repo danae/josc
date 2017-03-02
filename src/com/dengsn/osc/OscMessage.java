@@ -81,17 +81,25 @@ public class OscMessage
   }
   
   // Send the mesasge
-  public void sendTo(OscSender sender) throws IOException
+  public void sendTo(OscSender sender)
   {
     sender.send(this);
   }
-  public void sendTo(InetAddress address, int port) throws IOException
+  public void sendTo(InetAddress address, int port)
   {
     new OscSender(address,port).send(this);
   }
-  public void sendTo(String address, int port) throws IOException, UnknownHostException
+  public void sendTo(String address, int port) throws UnknownHostException
   {
-    new OscSender(InetAddress.getByName(address),port).send(this);
+    try
+    {
+      new OscSender(InetAddress.getByName(address),port).send(this);
+    }
+    catch (UnknownHostException ex)
+    {
+      System.err.println(ex.getMessage());
+      System.exit(-1);
+    }
   }
   
   // Convert to string

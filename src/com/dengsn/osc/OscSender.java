@@ -10,8 +10,8 @@ import java.net.UnknownHostException;
 public class OscSender
 {
   // Variables
-  private final InetAddress address;
-  private final Integer port;
+  private InetAddress address;
+  private Integer port;
   
   // Constructor
   public OscSender(InetAddress address, int port)
@@ -19,9 +19,31 @@ public class OscSender
     this.address = address;
     this.port = port;
   }
-  public OscSender(int port) throws UnknownHostException
+  public OscSender(String address, int port)
   {
-    this(InetAddress.getLocalHost(),port);
+    try
+    {
+      this.address = InetAddress.getByName(address);
+      this.port = port;
+    }
+    catch (UnknownHostException ex)
+    {
+      System.err.println(ex.getMessage());
+      System.exit(-1);
+    }
+  }
+  public OscSender(int port)
+  {
+    try
+    {
+      this.address = InetAddress.getLocalHost();
+      this.port = port;
+    }
+    catch (UnknownHostException ex)
+    {
+      System.err.println(ex.getMessage());
+      System.exit(-1);
+    }
   }
   
   // Management
@@ -35,17 +57,25 @@ public class OscSender
   }
   
   // Send message
-  public void send(OscMessage message) throws IOException
+  public void send(OscMessage message)
   {
-    // Create a byte buffer from the message
-    byte[] buffer = new OscMessageOutputStream()
-      .writeMessage(message)
-      .toByteArray();
+    try
+    {
+      // Create a byte buffer from the message
+      byte[] buffer = new OscMessageOutputStream()
+        .writeMessage(message)
+        .toByteArray();
     
-    // Create a new UDP socket and packet and send it
-    DatagramSocket socket = new DatagramSocket();
-    DatagramPacket packet = new DatagramPacket(buffer,buffer.length,this.address,this.port);
-    socket.send(packet);
+      // Create a new UDP socket and packet and send it
+      DatagramSocket socket = new DatagramSocket();
+      DatagramPacket packet = new DatagramPacket(buffer,buffer.length,this.address,this.port);
+      socket.send(packet);
+    }
+    catch (IOException ex)
+    {
+      System.err.println(ex.getMessage());
+      System.exit(-1);
+    }
   }
   
   // Convert to string

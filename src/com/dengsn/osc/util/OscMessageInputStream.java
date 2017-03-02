@@ -24,6 +24,7 @@ public class OscMessageInputStream extends ByteArrayInputStream
   {
     // Read the address
     String address = this.readString();
+    System.out.print(address);
     OscMessage message = new OscMessage(address);
     
     // Read the type list
@@ -32,6 +33,7 @@ public class OscMessageInputStream extends ByteArrayInputStream
     // Read the arguments
     for (Class type : types)
       message.getArguments().add(this.readObject(type));
+    System.out.println();
     
     return message;
   }
@@ -93,6 +95,7 @@ public class OscMessageInputStream extends ByteArrayInputStream
   // Returns a type string for the collection of objects
   private static List<Class> readTypes(String types)
   {
+    System.out.print(types);
     if (!types.startsWith(","))
       throw new IllegalArgumentException("Type string has to start with a comma");
     
