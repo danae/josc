@@ -10,8 +10,8 @@ import java.net.UnknownHostException;
 public class OscSender
 {
   // Variables
-  private InetAddress address;
-  private Integer port;
+  private final InetAddress address;
+  private final Integer port;
   
   // Constructor
   public OscSender(InetAddress address, int port)
@@ -28,8 +28,7 @@ public class OscSender
     }
     catch (UnknownHostException ex)
     {
-      System.err.println(ex.getMessage());
-      System.exit(-1);
+      throw new OscException("Could not find host: " + ex.getMessage(),ex);
     }
   }
   public OscSender(int port)
@@ -41,8 +40,7 @@ public class OscSender
     }
     catch (UnknownHostException ex)
     {
-      System.err.println(ex.getMessage());
-      System.exit(-1);
+      throw new OscException("Could not find host: " + ex.getMessage(),ex);
     }
   }
   
@@ -73,15 +71,14 @@ public class OscSender
     }
     catch (IOException ex)
     {
-      System.err.println(ex.getMessage());
-      System.exit(-1);
+      throw new OscException("Could not send message: " + ex.getMessage(),ex);
     }
   }
   
   // Convert to string
   @Override public String toString()
   {
-    return new StringBuilder("sender ")
+    return new StringBuilder("Sender ")
       .append(this.getAddress().getHostAddress())
       .append(":")
       .append(this.getPort())

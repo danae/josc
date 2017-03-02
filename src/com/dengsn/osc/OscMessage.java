@@ -1,7 +1,5 @@
 package com.dengsn.osc;
 
-import com.dengsn.osc.util.OscMessageOutputStream;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -32,6 +30,10 @@ public class OscMessage
   }
   
   // Get arguments
+  public Object get(int index)
+  {
+    return this.arguments.get(index);
+  }
   public <T> T get(int index, Class<T> type)
   {
     Object o = this.arguments.get(index);
@@ -89,7 +91,7 @@ public class OscMessage
   {
     new OscSender(address,port).send(this);
   }
-  public void sendTo(String address, int port) throws UnknownHostException
+  public void sendTo(String address, int port)
   {
     try
     {
@@ -97,8 +99,7 @@ public class OscMessage
     }
     catch (UnknownHostException ex)
     {
-      System.err.println(ex.getMessage());
-      System.exit(-1);
+      throw new OscException("Could not find host: " + ex.getMessage(),ex);
     }
   }
   

@@ -71,8 +71,8 @@ public class OscReceiver implements Runnable
         // Receive the packet
         socket.receive(packet);
         
-        // Create a message from the byte buffer
-        OscMessage message = new OscMessageInputStream(packet.getData())
+        // Create a message from the byte buffer        
+        OscMessage message = new OscMessageInputStream(packet.getData(),packet.getOffset(),packet.getLength())
           .readMessage();
         OscSender sender = new OscSender(packet.getAddress(),packet.getPort());
         
@@ -83,7 +83,7 @@ public class OscReceiver implements Runnable
     }
     catch (IOException ex)
     {
-      throw new RuntimeException(ex.getMessage(),ex);
+      throw new OscException("Could not receive message: " + ex.getMessage(),ex);
     }
   }
   
@@ -92,7 +92,7 @@ public class OscReceiver implements Runnable
   {
     try
     {
-      return new StringBuilder("receiver ")
+      return new StringBuilder("Receiver ")
         .append(InetAddress.getLocalHost().getHostAddress())
         .append(":")
         .append(this.getPort())
@@ -100,7 +100,7 @@ public class OscReceiver implements Runnable
     }
     catch (UnknownHostException ex)
     {
-      return new StringBuilder("receiver 0.0.0.0:")
+      return new StringBuilder("Receiver 0.0.0.0:")
         .append(this.getPort())
         .toString();
     }

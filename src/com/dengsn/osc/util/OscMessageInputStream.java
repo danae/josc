@@ -1,9 +1,11 @@
 package com.dengsn.osc.util;
 
+import com.dengsn.osc.OscException;
 import com.dengsn.osc.OscMessage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,13 +20,16 @@ public class OscMessageInputStream extends ByteArrayInputStream
   {
     super(buffer);
   }
+  public OscMessageInputStream(byte[] buffer, int offset, int length)
+  {
+    super(buffer,offset,length);
+  }
   
   // Read a message
   public OscMessage readMessage() throws IOException
   {
     // Read the address
     String address = this.readString();
-    System.out.print(address);
     OscMessage message = new OscMessage(address);
     
     // Read the type list
@@ -33,7 +38,6 @@ public class OscMessageInputStream extends ByteArrayInputStream
     // Read the arguments
     for (Class type : types)
       message.getArguments().add(this.readObject(type));
-    System.out.println();
     
     return message;
   }
@@ -53,7 +57,7 @@ public class OscMessageInputStream extends ByteArrayInputStream
     else if (type.equals(String.class))
       return this.readString();
     else
-      throw new RuntimeException("Objects of type " + type.getName() + " are not supported");
+      throw new OscException("Objects of type " + type.getName() + " are not supported");
   }
 
   // Read a 32-bit value from the stream
@@ -78,15 +82,12 @@ public class OscMessageInputStream extends ByteArrayInputStream
     StringBuilder sb = new StringBuilder();
     
     // Read all characters
-    int character = 0, num = 0;
-    do {
-      character = this.read();
+    int character, num;
+    for (num = 1; (character = this.read()) > 0; num ++)
       sb.appendCodePoint(character);
-      num ++;
-    } while (character != 0);
     
     // Pad with null characters
-    for (int i = 0; i < 4 - (num % 4); i++)
+    for (int i = num; i % 4 != 0; i ++)
       this.read();
     
     return sb.toString();
@@ -95,17 +96,19 @@ public class OscMessageInputStream extends ByteArrayInputStream
   // Returns a type string for the collection of objects
   private static List<Class> readTypes(String types)
   {
-    System.out.print(types);
+    // Check if types are given
+    if (types.isEmpty())
+      return Collections.emptyList();
+              
+    // Check if the string start with a comma
     if (!types.startsWith(","))
       throw new IllegalArgumentException("Type string has to start with a comma");
     
+    // Parse the types
     List<Class> list = new LinkedList<>();
     for (int i = 1; i < types.length(); i ++)
     {
       char c = types.charAt(i);
-      
-      if (c == '\0')
-        continue;
       
       if (c == 'i')
         list.add(Integer.class);
@@ -118,7 +121,7 @@ public class OscMessageInputStream extends ByteArrayInputStream
       else if (c == 's')
         list.add(String.class);
       else
-        throw new RuntimeException("Types of type '" + types.charAt(i) + "' are not supported");
+        throw new OscException("Types of type '" + types.charAt(i) + "' are not supported");
     }
     return list;
   }
