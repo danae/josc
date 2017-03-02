@@ -1,5 +1,6 @@
 package com.dengsn.osc.util;
 
+import com.dengsn.osc.OscException;
 import com.dengsn.osc.OscMessage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,7 +40,7 @@ public class OscMessageOutputStream extends ByteArrayOutputStream
     else if (o instanceof String)
       this.writeString((String)o);
     else
-      throw new RuntimeException("Objects of type " + o.getClass().getName() + " are not supported");
+      throw new OscException("Objects of type " + o.getClass().getName() + " are not supported");
   }
   
   // Write a 32-bit value to the stream
@@ -93,7 +94,7 @@ public class OscMessageOutputStream extends ByteArrayOutputStream
       else if (c.equals(String.class))
         sb.append('s');
       else
-        throw new RuntimeException("Objects of type " + o.getClass().getName() + " are not supported");
+        throw new OscException("Objects of type " + o.getClass().getName() + " are not supported");
     }
     return sb.toString();
   }
